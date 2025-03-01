@@ -1,7 +1,7 @@
 streamlit
 pandas
-numpy
+numpy==1.21.2
 scikit-learn
 matplotlib
-catboost
+catboost==1.0.3
 altair
