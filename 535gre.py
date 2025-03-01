@@ -82,7 +82,7 @@ most_recent_winning_numbers = data.iloc[-1, 1:].tolist()
 #st.write(f"Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}")
 
 st.markdown(f"""
-    <h2 style='color: #FF FF 00; font-size: 20px; text-shadow: 0 0 10px #FF FF 00, 0 0 20px #FF FF 00, 0 0 30px #FF FF 00;'>📌 Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}</h2>
+    <h2 style='color: #FFFF00; font-size: 20px; text-shadow: 0 0 10px #FFFF00, 0 0 20px #FFFF00, 0 0 30px #FFFF00;'>📌 Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}</h2>
     """, unsafe_allow_html=True)
 
 SEED = 42
