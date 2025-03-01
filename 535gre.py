@@ -8,10 +8,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier  
-from catboost import CatBoostClassifier
+#from catboost import CatBoostClassifier
 from itertools import combinations
 from collections import Counter
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import time
 import warnings
 
@@ -93,7 +93,7 @@ models = {
         final_estimator=LogisticRegression()
     ),
     'SVM': SVC(random_state=SEED, probability=True),
-    'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
+    #'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
     'MLPClassifier': MLPClassifier(random_state=SEED, max_iter=200),
 }
 
