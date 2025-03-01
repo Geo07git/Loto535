@@ -7,7 +7,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
-from sklearn.neural_network import MLPClassifier  
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
 #from catboost import CatBoostClassifier
 from itertools import combinations
 from collections import Counter
@@ -95,6 +96,7 @@ models = {
     'SVM': SVC(random_state=SEED, probability=True),
     #'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
     'MLPClassifier': MLPClassifier(random_state=SEED, max_iter=200),
+    'KNN': KNeighborsClassifier(),
 }
 
 # Funcție pentru antrenarea modelelor și prezicerea numerelor
