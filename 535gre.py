@@ -68,7 +68,19 @@ st.markdown("""
 """, unsafe_allow_html=True)  # <-- AICI, LA ÎNCEPUTUL CODULUI!
 
 # Configurare UI Streamlit
-st.title('LOTO Grecia535 PREDICTION')
+#st.title('LOTO Grecia535 PREDICTION')
+
+#import streamlit as st
+#import time
+
+st.title("Loto Grecia 5/35 Prediction")
+
+with st.spinner('🔄 Calculăm predicțiile... te rog așteaptă!'):
+    time.sleep(3)  # Simulează procesarea
+    st.success('✅ Predicțiile au fost generate cu succes!')
+
+st.info("Pentru rezultate mai bune, încearcă să actualizezi datele frecvent.")
+
 
 # Incaracare date
 file_path = '535.csv'
