@@ -69,7 +69,8 @@ st.markdown("""
 
 # Configurare UI Streamlit
 st.title('LOTO Grecia535 PREDICTION')
-
+
+
 # Incaracare date
 file_path = '535.csv'
 data = pd.read_csv(file_path)
@@ -183,3 +184,8 @@ if 'saved_predictions' in st.session_state:
     st.table(st.session_state['saved_predictions'])
 # 🔹 Vizualizare frecvență numere
 #visualize_most_frequent(y)
+st.info("Actualizarea datelor se face de doua ori pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
+
+# Afișează data și ora curente
+now = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+st.write(f"🕒 Actualizat la {now}")
