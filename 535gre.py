@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import pytz
 from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, StackingClassifier, BaggingClassifier
@@ -185,8 +186,9 @@ if 'saved_predictions' in st.session_state:
     st.table(st.session_state['saved_predictions'])
 # 🔹 Vizualizare frecvență numere
 #visualize_most_frequent(y)
-st.info("Actualizarea datelor se face de doua ori pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
+st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
 
 # Afișează data și ora curente
-now = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+tz = pytz.timezone('Europe/Bucharest')
+now = datetime.now(tz).strftime("%d-%m-%Y %H:%M:%S %Z%z")
 st.write(f"🕒 Actualizat la {now}")
