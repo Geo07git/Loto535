@@ -189,46 +189,6 @@ if 'saved_predictions' in st.session_state:
 st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
 
 # Afișează data și ora curente
-#tz = pytz.timezone('Europe/Bucharest')
-#now = datetime.now(tz).strftime("%d-%m-%Y %H:%M:%S %Z")
-#st.write(f"🕒 Actualizat la {now}")
-
-import streamlit as st
-import urllib.request
-from datetime import datetime, timedelta
-
-# Linkul raw către fișierul .csv pe GitHub
-url = "https://raw.githubusercontent.com/Geo07git/Loto535/refs/heads/main/535.csv"
-
-# Trimite un HEAD request pentru a obține doar header-ele
-req = urllib.request.Request(url, method="HEAD")
-
-try:
-    with urllib.request.urlopen(req) as response:
-        # Extrage data ultimei modificări din header
-        ultima_modificare = response.headers.get('Last-Modified')
-        if ultima_modificare:
-            # Transformă data într-un format datetime
-            data_si_ora = datetime.strptime(ultima_modificare, '%a, %d %b %Y %H:%M:%S %Z')
-            # Calculează timpul trecut
-            diferenta = datetime.utcnow() - data_si_ora
-
-            # Creează mesajul în funcție de timpul trecut
-            if diferenta < timedelta(minutes=1):
-                mesaj = "Actualizat acum câteva secunde"
-            elif diferenta < timedelta(hours=1):
-                minute = int(diferenta.total_seconds() // 60)
-                mesaj = f"Actualizat acum {minute} min"
-            elif diferenta < timedelta(days=1):
-                ore = int(diferenta.total_seconds() // 3600)
-                mesaj = f"Actualizat acum {ore} ore"
-            else:
-                zile = diferenta.days
-                mesaj = f"Actualizat acum {zile} zile"
-
-            # Afișează mesajul în Streamlit
-            st.write(f"**{mesaj}**")
-        else:
-            st.write("Nu am găsit informații despre ultima actualizare.")
-except Exception as e:
-    st.write(f"Eroare la accesarea fișierului: {e}")
+tz = pytz.timezone('Europe/Bucharest')
+now = datetime.now(tz).strftime("%d-%m-%Y %H:%M:%S %Z")
+st.write(f"🕒 Actualizat la {now}")
