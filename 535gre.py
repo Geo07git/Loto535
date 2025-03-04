@@ -189,6 +189,30 @@ if 'saved_predictions' in st.session_state:
 st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
 
 # Afișează data și ora curente
-tz = pytz.timezone('Europe/Bucharest')
-now = datetime.now(tz).strftime("%d-%m-%Y %H:%M:%S %Z")
-st.write(f"🕒 Actualizat la {now}")
+#tz = pytz.timezone('Europe/Bucharest')
+#now = datetime.now(tz).strftime("%d-%m-%Y %H:%M:%S %Z")
+#st.write(f"🕒 Actualizat la {now}")
+
+import streamlit as st
+import requests
+from datetime import datetime
+
+# Linkul raw către fișierul .csv pe GitHub
+url = "https://raw.githubusercontent.com/utilizator/repo/branch/fisierul_tau.csv"
+
+# Trimite un HEAD request pentru a obține doar header-ele
+r = requests.head(url)
+
+# Verifică dacă request-ul a fost cu succes
+if r.status_code == 200:
+    # Extrage data ultimei modificări din header
+    ultima_modificare = r.headers.get('Last-Modified')
+    if ultima_modificare:
+        # Transformă data într-un format mai lizibil
+        data_si_ora = datetime.strptime(ultima_modificare, '%a, %d %b %Y %H:%M:%S %Z')
+        # Afișează doar textul dorit
+        st.write(f"**Actualizat la:** {data_si_ora}")
+    else:
+        st.write("Nu am găsit informații despre ultima actualizare.")
+else:
+    st.write(f"Eroare: Nu am putut accesa fișierul (cod {r.status_code}).")
