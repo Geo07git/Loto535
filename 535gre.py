@@ -198,7 +198,7 @@ import requests
 from datetime import datetime
 
 # Linkul raw către fișierul .csv pe GitHub
-url = "https://raw.githubusercontent.com/utilizator/repo/branch/fisierul_tau.csv"
+url = "https://raw.githubusercontent.com/Geo07git/Loto535/refs/heads/main/535.csv"
 
 # Trimite un HEAD request pentru a obține doar header-ele
 r = requests.head(url)
