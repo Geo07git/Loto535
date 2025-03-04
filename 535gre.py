@@ -195,7 +195,7 @@ st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana 
 
 import streamlit as st
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Linkul raw către fișierul .csv pe GitHub
 url = "https://raw.githubusercontent.com/Geo07git/Loto535/refs/heads/main/535.csv"
@@ -208,11 +208,28 @@ if r.status_code == 200:
     # Extrage data ultimei modificări din header
     ultima_modificare = r.headers.get('Last-Modified')
     if ultima_modificare:
-        # Transformă data într-un format mai lizibil
+        # Transformă data într-un format datetime
         data_si_ora = datetime.strptime(ultima_modificare, '%a, %d %b %Y %H:%M:%S %Z')
-        # Afișează doar textul dorit
-        st.write(f"**Actualizat la:** {data_si_ora}")
+        # Calculează timpul trecut
+        diferenta = datetime.utcnow() - data_si_ora
+
+        # Creează mesajul în funcție de timpul trecut
+        if diferenta < timedelta(minutes=1):
+            mesaj = "Actualizat acum câteva secunde"
+        elif diferenta < timedelta(hours=1):
+            minute = int(diferenta.total_seconds() // 60)
+            mesaj = f"Actualizat acum {minute} min"
+        elif diferenta < timedelta(days=1):
+            ore = int(diferenta.total_seconds() // 3600)
+            mesaj = f"Actualizat acum {ore} ore"
+        else:
+            zile = diferenta.days
+            mesaj = f"Actualizat acum {zile} zile"
+
+        # Afișează mesajul în Streamlit
+        st.write(f"**{mesaj}**")
     else:
         st.write("Nu am găsit informații despre ultima actualizare.")
 else:
     st.write(f"Eroare: Nu am putut accesa fișierul (cod {r.status_code}).")
+
