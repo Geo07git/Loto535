@@ -169,7 +169,7 @@ def predict_final_xgboost():
         all_numbers.extend(eval(numere))
 
     num_freq = Counter(all_numbers)
-    final_prediction = [num for num, freq in num_freq.most_common(5)]
+    final_prediction = [num for num, freq in num_freq.most_common(15)]
     
     return final_prediction
 
