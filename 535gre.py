@@ -239,8 +239,8 @@ if user_numbers:
     for _, row in data.iterrows():
         extracted_numbers = row[1:].tolist()  # Extrage numerele din rând
         match_count = len(set(user_numbers) & set(extracted_numbers))  # Calculează potrivirile
-        if match_count >= 2:  # Verifică doar potrivirile de la 7 în sus
-            if match_count <= 15:  # Asigură-te că nu depășești 15
+        if match_count >= 1:  # Verifică doar potrivirile de la 7 în sus
+            if match_count <= 10:  # Asigură-te că nu depășești 15
                 matches[match_count] += 1
 
     # Afișarea rezultatelor
