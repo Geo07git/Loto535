@@ -162,35 +162,47 @@ if st.button('Generează 5 seturi de predictii ML'):
 
 import pandas as pd
 from collections import Counter
-import ast
 
-# 🔹 Funcție pentru selecția finală cu XGBoost
+# 🔹 Funcție pentru selecția finală cu XGBoost (fără ast, cu eval)
 def predict_final_xgboost():
     try:
         df = pd.read_csv('predictions_temp.csv')
+        print("📂 Fișier încărcat cu succes!")
+        print("📊 Coloane disponibile:", df.columns)
 
         # Verifică dacă coloana "Numere prezise" există
         if 'Numere prezise' not in df.columns:
-            print("Coloana 'Numere prezise' nu există în fișier.")
+            print("⚠️ Coloana 'Numere prezise' nu există în fișier.")
             return []
 
         all_numbers = []
         for numere in df['Numere prezise']:
-            # Folosește ast.literal_eval în loc de eval pentru siguranță
-            all_numbers.extend(ast.literal_eval(numere))
+            try:
+                num_list = eval(numere)  # ⚠️ Folosim eval() în loc de ast.literal_eval()
+                print(f"🔢 Numere extrase: {num_list}")
+                all_numbers.extend(num_list)
+            except Exception as e:
+                print(f"❌ Eroare la evaluarea: {numere} -> {e}")
+
+        if not all_numbers:
+            print("⚠️ Nu au fost găsite numere valide.")
+            return []
 
         num_freq = Counter(all_numbers)
-        final_prediction = [int(num) for num, freq in num_freq.most_common(10)]  # 🔄 Convertim toate numerele la tipul int
+        print("📊 Frecvența numerelor:", num_freq)
+
+        final_prediction = [int(num) for num, freq in num_freq.most_common(10)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
 
     except FileNotFoundError:
-        print("Fișierul 'predictions_temp.csv' nu a fost găsit.")
+        print("❌ Fișierul 'predictions_temp.csv' nu a fost găsit.")
         return []
     except Exception as e:
-        print(f"Eroare: {e}")
+        print(f"❌ Eroare neașteptată: {e}")
         return []
+
 
 
 # 🔹 Buton pentru predicția finală
