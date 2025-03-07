@@ -191,7 +191,7 @@ def predict_final_xgboost():
         num_freq = Counter(all_numbers)
         print("📊 Frecvența numerelor:", num_freq)
 
-        final_prediction = [int(num) for num, freq in num_freq.most_common(15)]
+        final_prediction = [int(num) for num, freq in num_freq.most_common(10)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
@@ -222,7 +222,7 @@ if 'saved_predictions' in st.session_state:
 import streamlit as st
 
 # 🔹 Verificare Numere Extrase
-st.subheader("📌 Verifică câte numere s-au potrivit la extrageri")
+st.subheader("📌 Verifică câte numere din varianta finala au iesit la variantele analizate")
 
 # Preia automat "numerele finale prezise"
 if 'final_numbers' in locals():
@@ -232,20 +232,20 @@ else:
 
 # Se folosește numărul final prezis automat
 if user_numbers:
-    # Verificarea potrivirilor pentru 1 până la 5 numere
-    matches = {i: 0 for i in range(1, 6)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 7 și 15
+    # Verificarea potrivirilor pentru 2 până la 5 numere
+    matches = {i: 0 for i in range(2, 6)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 2 și 5
     total_extrageri = len(data)  # Numărul total de extrageri
 
     for _, row in data.iterrows():
         extracted_numbers = row[1:].tolist()  # Extrage numerele din rând
         match_count = len(set(user_numbers) & set(extracted_numbers))  # Calculează potrivirile
-        if match_count >= 1:  # Verifică doar potrivirile de la 7 în sus
-            if match_count <= 10:  # Asigură-te că nu depășești 15
+        if match_count >= 2:  # Verifică doar potrivirile de la 2 în sus
+            if match_count <= 10:  # Asigură-te că nu depășești most_common(10)
                 matches[match_count] += 1
 
     # Afișarea rezultatelor
-    st.write("## Rezultate")
-    for i in range(1, 6):  # Afișează rezultatele pentru potrivirile între 7 și 15
+    st.write("##📌 Rezultate verificari")
+    for i in range(2, 6):  # Afișează rezultatele pentru potrivirile între 2 și 5
         numar_potriviri = matches[i]
         probabilitate = (numar_potriviri / total_extrageri) * 100  # Calculul probabilității în procente
         st.write(f"{i} numere potrivite: {numar_potriviri} ori ({probabilitate:.2f}%)")
@@ -255,6 +255,6 @@ st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana 
 # Afișează data și ora curente
 tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
-st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
+#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
 
-#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
+st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
