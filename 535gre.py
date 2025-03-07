@@ -191,7 +191,7 @@ def predict_final_xgboost():
         num_freq = Counter(all_numbers)
         print("📊 Frecvența numerelor:", num_freq)
 
-        final_prediction = [int(num) for num, freq in num_freq.most_common(10)]
+        final_prediction = [int(num) for num, freq in num_freq.most_common(15)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
@@ -232,7 +232,7 @@ else:
 
 # Se folosește numărul final prezis automat
 if user_numbers:
-    # Verificarea potrivirilor pentru 7 până la 15 numere
+    # Verificarea potrivirilor pentru 1 până la 5 numere
     matches = {i: 0 for i in range(1, 6)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 7 și 15
     total_extrageri = len(data)  # Numărul total de extrageri
 
