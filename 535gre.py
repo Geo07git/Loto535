@@ -160,20 +160,38 @@ if st.button('Generează 5 seturi de predictii ML'):
 
     predictions_df.to_csv('predictions_temp.csv', index=False)
 
+import pandas as pd
+from collections import Counter
+import ast
+
 # 🔹 Funcție pentru selecția finală cu XGBoost
 def predict_final_xgboost():
-    df = pd.read_csv('predictions_temp.csv')
-    #X = data.iloc[:, 0].values.reshape(-1, 1)  # Numarul extragerii
-    #y = data.iloc[:, 1:].values  # Numerele extrase
+    try:
+        df = pd.read_csv('predictions_temp.csv')
 
-    all_numbers = []
-    for numere in df['Numere prezise']:
-        all_numbers.extend(eval(numere))
+        # Verifică dacă coloana "Numere prezise" există
+        if 'Numere prezise' not in df.columns:
+            print("Coloana 'Numere prezise' nu există în fișier.")
+            return []
 
-    num_freq = Counter(all_numbers)
-    final_prediction = [num for num, freq in num_freq.most_common(10)]
-    
-    return final_prediction
+        all_numbers = []
+        for numere in df['Numere prezise']:
+            # Folosește ast.literal_eval în loc de eval pentru siguranță
+            all_numbers.extend(ast.literal_eval(numere))
+
+        num_freq = Counter(all_numbers)
+        final_prediction = [int(num) for num, freq in num_freq.most_common(10)]  # 🔄 Convertim toate numerele la tipul int
+        
+        print(f"📌 VARIANTA FINALA: {final_prediction}")
+        return final_prediction
+
+    except FileNotFoundError:
+        print("Fișierul 'predictions_temp.csv' nu a fost găsit.")
+        return []
+    except Exception as e:
+        print(f"Eroare: {e}")
+        return []
+
 
 # 🔹 Buton pentru predicția finală
 if st.button('Calculează predicția finală'):
