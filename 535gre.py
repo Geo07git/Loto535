@@ -169,7 +169,7 @@ def predict_final_xgboost():
         all_numbers.extend(eval(numere))
 
     num_freq = Counter(all_numbers)
-    final_prediction = [num for num, freq in num_freq.most_common(15)]
+    final_prediction = [num for num, freq in num_freq.most_common(10)]
     
     return final_prediction
 
@@ -179,10 +179,10 @@ if st.button('Calculează predicția finală'):
     #st.write(f"📌 NUMERELE FINALE PREZISE {final_numbers}")
     #st.write(f"Final Numbers: {final_numbers}")  # Verifică ce este în final_numbers
     st.markdown(f"""
-    <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA PREZISA: {final_numbers}</h2>
+    <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA : {final_numbers}</h2>
     """, unsafe_allow_html=True)
 if 'saved_predictions' in st.session_state:
-    st.subheader("📌 Seturile salvate anterior")
+    st.subheader("📌 Seturile salvate")
     st.table(st.session_state['saved_predictions'])
 # 🔹 Vizualizare frecvență numere
 #visualize_most_frequent(y)
@@ -191,4 +191,6 @@ st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana 
 # Afișează data și ora curente
 tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
-st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
+st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
+
+#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
