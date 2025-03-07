@@ -179,7 +179,7 @@ if st.button('Calculează predicția finală'):
     #st.write(f"📌 NUMERELE FINALE PREZISE {final_numbers}")
     #st.write(f"Final Numbers: {final_numbers}")  # Verifică ce este în final_numbers
     st.markdown(f"""
-    <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA : {final_numbers}</h2>
+    <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA: {final_numbers}</h2>
     """, unsafe_allow_html=True)
 if 'saved_predictions' in st.session_state:
     st.subheader("📌 Seturile salvate")
