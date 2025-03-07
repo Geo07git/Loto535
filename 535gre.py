@@ -218,6 +218,38 @@ if 'saved_predictions' in st.session_state:
     st.table(st.session_state['saved_predictions'])
 # 🔹 Vizualizare frecvență numere
 #visualize_most_frequent(y)
+
+import streamlit as st
+
+# 🔹 Verificare Numere Extrase
+st.subheader("📌 Verifică câte numere s-au potrivit la extrageri")
+
+# Preia automat "numerele finale prezise"
+if 'final_numbers' in locals():
+    user_numbers = final_numbers
+else:
+    user_numbers = []  # Dacă nu există numere prezise
+
+# Se folosește numărul final prezis automat
+if user_numbers:
+    # Verificarea potrivirilor pentru 7 până la 15 numere
+    matches = {i: 0 for i in range(1, 6)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 7 și 15
+    total_extrageri = len(data)  # Numărul total de extrageri
+
+    for _, row in data.iterrows():
+        extracted_numbers = row[1:].tolist()  # Extrage numerele din rând
+        match_count = len(set(user_numbers) & set(extracted_numbers))  # Calculează potrivirile
+        if match_count >= 2:  # Verifică doar potrivirile de la 7 în sus
+            if match_count <= 15:  # Asigură-te că nu depășești 15
+                matches[match_count] += 1
+
+    # Afișarea rezultatelor
+    st.write("## Rezultate")
+    for i in range(1, 6):  # Afișează rezultatele pentru potrivirile între 7 și 15
+        numar_potriviri = matches[i]
+        probabilitate = (numar_potriviri / total_extrageri) * 100  # Calculul probabilității în procente
+        st.write(f"{i} numere potrivite: {numar_potriviri} ori ({probabilitate:.2f}%)")
+
 st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
 
 # Afișează data și ora curente
