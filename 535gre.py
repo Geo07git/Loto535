@@ -163,13 +163,15 @@ if st.button('Generează 5 seturi de predictii ML'):
 # 🔹 Funcție pentru selecția finală cu XGBoost
 def predict_final_xgboost():
     df = pd.read_csv('predictions_temp.csv')
+    #X = data.iloc[:, 0].values.reshape(-1, 1)  # Numarul extragerii
+    #y = data.iloc[:, 1:].values  # Numerele extrase
 
     all_numbers = []
     for numere in df['Numere prezise']:
         all_numbers.extend(eval(numere))
 
     num_freq = Counter(all_numbers)
-    final_prediction = [num for num, freq in num_freq.most_common(6)]
+    final_prediction = [num for num, freq in num_freq.most_common(10)]
     
     return final_prediction
 
