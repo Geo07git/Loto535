@@ -1,4 +1,4 @@
-import streamlit as st
+O8import streamlit as st
 import pandas as pd
 import numpy as np
 import pytz
@@ -255,6 +255,6 @@ st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana 
 # Afișează data și ora curente
 tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
-#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
+st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
 
-st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
+#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
