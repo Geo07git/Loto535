@@ -191,7 +191,7 @@ def predict_final_xgboost():
         num_freq = Counter(all_numbers)
         print("📊 Frecvența numerelor:", num_freq)
 
-        final_prediction = [int(num) for num, freq in num_freq.most_common(10)]
+        final_prediction = [int(num) for num, freq in num_freq.most_common(12)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
@@ -255,6 +255,6 @@ st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana 
 # Afișează data și ora curente
 tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
-st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
+#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
 
-#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 19.00")
+st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 19.00")
