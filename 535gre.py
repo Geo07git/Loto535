@@ -259,4 +259,4 @@ now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
 
 #st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 15.00") 
 
-st.writte(f"Seeviciul este în mentenanta") 
+st.write(f"Seviciul este în mentenanta") 
