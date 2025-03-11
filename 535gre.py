@@ -244,7 +244,7 @@ if user_numbers:
                 matches[match_count] += 1
 
     # Afișarea rezultatelor
-    st.write("##📌 Rezultate verificari")
+    st.write("📌 Rezultate verificari")
     for i in range(2, 6):  # Afișează rezultatele pentru potrivirile între 2 și 5
         numar_potriviri = matches[i]
         probabilitate = (numar_potriviri / total_extrageri) * 100  # Calculul probabilității în procente
@@ -259,4 +259,4 @@ now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
 
 #st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 15.00") 
 
-st.write(f" 🛠 Seviciul este în mentenanta") 
+st.write(f"##🛠 Seviciul este în mentenanta") 
