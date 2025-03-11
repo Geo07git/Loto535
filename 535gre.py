@@ -257,4 +257,6 @@ tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y") #%H:%M:%S %Z")
 #st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
 
-st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 15.00")
+#st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 15.00") 
+
+st.writte(f"Seeviciul este în mentenanta") 
