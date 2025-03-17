@@ -213,13 +213,13 @@ if st.button('Calculează predicția finală'):
     st.markdown(f"""
     <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA: {final_numbers}</h2>
     """, unsafe_allow_html=True)
+
+st.info("Sunt generate 12 numere , care sunt afisate in ordinea descescatare a sansei de aparitie !
+         Ele pot fi jucate in orice numar intre 5-:-12")
+
 if 'saved_predictions' in st.session_state:
     st.subheader("📌 Seturile salvate")
     st.table(st.session_state['saved_predictions'])
-# 🔹 Vizualizare frecvență numere
-#visualize_most_frequent(y)
-
-import streamlit as st
 
 # 🔹 Verificare Numere Extrase
 st.subheader("📌 Verifică câte numere din varianta finala au iesit la variantele analizate")
