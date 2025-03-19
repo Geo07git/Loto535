@@ -70,11 +70,34 @@ st.markdown("""
 """, unsafe_allow_html=True)  # <-- AICI, LA ÎNCEPUTUL CODULUI!
 
 # Configurare UI Streamlit
-st.title('LOTO Grecia535 PREDICTION')
+st.title('LOTTO PREDICTION')
 
+st.subheader("Selectează și încarcă baza de date")
+
+# 🔹 Etichete personalizate pentru fișiere
+file_labels = {
+    "Italia - WinForLife": "ita1020.csv",
+    "Grecie - Extra 5": "535.csv",
+    "Polonia - Kaskada": "kaskada.csv",
+    "Romania 6/49": "loto49.csv"
+}
+
+# 🔹 Selectare fișier
+selected_label = st.selectbox("Alege fișierul:", list(file_labels.keys()))
+file_path = file_labels[selected_label]  # Obține numele fișierului
+
+# 🔹 Încărcare date
+try:
+    data = pd.read_csv(file_path)  # Citește fișierul
+    st.write(f"📂 **Fișier selectat:** {file_path}")
+    st.dataframe(data.head(5))  # Afișează primele 10 rânduri
+    
+    # Aici poți face prelucrări pe `data`
+except FileNotFoundError:
+    st.error("❌ Fișierul nu a fost găsit. Verifică dacă există în folderul curent.")
 
 # Incaracare date
-file_path = '535.csv'
+#file_path = '535.csv'
 data = pd.read_csv(file_path)
 X = data.iloc[:, 0].values.reshape(-1, 1)  # Numarul extragerii
 y = data.iloc[:, 1:].values  # Numerele extrase
@@ -220,9 +243,13 @@ st.info("Sunt generate 12 numere , care sunt afisate in ordinea descescatare a s
 if 'saved_predictions' in st.session_state:
     st.subheader("📌 Seturile salvate")
     st.table(st.session_state['saved_predictions'])
+# 🔹 Vizualizare frecvență numere
+#visualize_most_frequent(y)
+
+import streamlit as st
 
 # 🔹 Verificare Numere Extrase
-st.subheader("📌 Verifică câte numere din varianta finala au iesit la variantele analizate")
+st.subheader("📌 Verifică câte numere din varianta finala au iesit in variantele analizate")
 
 # Preia automat "numerele finale prezise"
 if 'final_numbers' in locals():
@@ -233,30 +260,32 @@ else:
 # Se folosește numărul final prezis automat
 if user_numbers:
     # Verificarea potrivirilor pentru 2 până la 5 numere
-    matches = {i: 0 for i in range(2, 6)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 2 și 5
+    matches = {i: 0 for i in range(2, 13)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 2 și 5
     total_extrageri = len(data)  # Numărul total de extrageri
 
     for _, row in data.iterrows():
         extracted_numbers = row[1:].tolist()  # Extrage numerele din rând
         match_count = len(set(user_numbers) & set(extracted_numbers))  # Calculează potrivirile
-        if match_count >= 2:  # Verifică doar potrivirile de la 2 în sus
-            if match_count <= 10:  # Asigură-te că nu depășești most_common(10)
+        if match_count >= 2:  # Verifică doar potrivirile de la 3 în sus
+            if match_count <= 12:  # Asigură-te că nu depășești most_common(10)
                 matches[match_count] += 1
 
     # Afișarea rezultatelor
     st.write("📌 Rezultate verificari")
-    for i in range(2, 6):  # Afișează rezultatele pentru potrivirile între 2 și 5
+    for i in range(3, 13):  # Afișează rezultatele pentru potrivirile între 2 și 5
         numar_potriviri = matches[i]
         probabilitate = (numar_potriviri / total_extrageri) * 100  # Calculul probabilității în procente
         st.write(f"{i} numere potrivite: {numar_potriviri} ori ({probabilitate:.2f}%)")
 
-st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
+
+#st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
 
 # Afișează data și ora curente
 tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y")#  %H:%M:%S %Z")
-#st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 15.00")
+#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
 
-st.write(f"🕒 Baza de date a fost actualizata pentru tragerea din {now} ora 19.00") 
+st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile din {now}") 
 
 #st.write(f"🛠️ Serviciul este în mentenanta : {now} ") 
+
