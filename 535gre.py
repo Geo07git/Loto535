@@ -76,7 +76,7 @@ st.subheader("Selectează și încarcă baza de date")
 
 # 🔹 Etichete personalizate pentru fișiere
 file_labels = {
-    "Italia - WinForLife": "ita1020.csv",
+    "Italia - WinForLife": "itawin2y.csv",
     "Grecie - Extra 5": "535.csv",
     "Polonia - Kaskada": "kaskada.csv",
     "Romania 6/49": "loto49.csv"
