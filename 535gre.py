@@ -72,6 +72,7 @@ st.markdown("""
 
 # Configurare UI Streamlit
 st.title('LOTTO PREDICTION')
+st.title('TESTE===TESTE===TESTE')
 
 st.subheader("Selectează și încarcă baza de date")
 
