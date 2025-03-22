@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.cluster import KMeans
 #from catboost import CatBoostClassifier
 from itertools import combinations
 from collections import Counter
@@ -83,14 +84,14 @@ file_labels = {
 }
 
 # 🔹 Selectare fișier
-selected_label = st.selectbox("Alege fișierul:", list(file_labels.keys()))
+selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()))
 file_path = file_labels[selected_label]  # Obține numele fișierului
 
 # 🔹 Încărcare date
 try:
     data = pd.read_csv(file_path)  # Citește fișierul
     st.write(f"📂 **Fișier selectat:** {file_path}")
-    st.dataframe(data.head(5))  # Afișează primele 10 rânduri
+    st.dataframe(data.tail(5))  # Afișează primele 10 rânduri
     
     # Aici poți face prelucrări pe `data`
 except FileNotFoundError:
@@ -101,10 +102,15 @@ except FileNotFoundError:
 data = pd.read_csv(file_path)
 X = data.iloc[:, 0].values.reshape(-1, 1)  # Numarul extragerii
 y = data.iloc[:, 1:].values  # Numerele extrase
+#y = data.iloc[:, 1:-1].values
+
 
 # Afișați cel mai recent număr de extragere și numerele câștigătoare
 most_recent_draw = data.iloc[-1, 0]
 most_recent_winning_numbers = data.iloc[-1, 1:].tolist()
+#most_recent_draw = data.iloc[-1, -1]
+#most_recent_winning_numbers = data.iloc[-1, :-1].tolist()
+
 #st.write(f"Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}")
 
 st.markdown(f"""
@@ -124,6 +130,7 @@ models = {
         final_estimator=LogisticRegression()
     ),
     'SVM': SVC(random_state=SEED, probability=True),
+    #'K-means':KMeans(n_clusters=8, random_state=SEED),
     #'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
     'MLPClassifier': MLPClassifier(random_state=SEED, max_iter=200),
     'KNN': KNeighborsClassifier(),
@@ -141,8 +148,8 @@ def predict_numbers_and_accuracy(models):
         accuracies = []
         predictions = []
         for SEED in range(42,43):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=SEED)
-            for j in range(y.shape[1]):  
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=SEED)
+            for j in range(y.shape[1]):
                 model.fit(X_train, y_train[:, j])
                 y_pred = model.predict(X_test)
                 accuracy = accuracy_score(y_test[:, j], y_pred)
@@ -267,7 +274,7 @@ if user_numbers:
         extracted_numbers = row[1:].tolist()  # Extrage numerele din rând
         match_count = len(set(user_numbers) & set(extracted_numbers))  # Calculează potrivirile
         if match_count >= 2:  # Verifică doar potrivirile de la 3 în sus
-            if match_count <= 12:  # Asigură-te că nu depășești most_common(10)
+            if match_count <= 13:  # Asigură-te că nu depășești most_common(10)
                 matches[match_count] += 1
 
     # Afișarea rezultatelor
