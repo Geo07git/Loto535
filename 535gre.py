@@ -149,7 +149,7 @@ def predict_numbers_and_accuracy(models):
         accuracies = []
         predictions = []
         for SEED in range(42,43):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=SEED)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=SEED)
             for j in range(y.shape[1]):
                 model.fit(X_train, y_train[:, j])
                 y_pred = model.predict(X_test)
@@ -222,7 +222,7 @@ def predict_final_xgboost():
         num_freq = Counter(all_numbers)
         print("📊 Frecvența numerelor:", num_freq)
 
-        final_prediction = [int(num) for num, freq in num_freq.most_common(12)]
+        final_prediction = [int(num) for num, freq in num_freq.most_common(20)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
