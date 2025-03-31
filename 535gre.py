@@ -160,8 +160,8 @@ def predict_numbers_and_accuracy(models):
         
         # Asigurați-vă că predicțiile sunt unice
         unique_predictions = list(set(predictions))
-        while len(unique_predictions) < 5:
-            unique_predictions.append(np.random.choice(list(set(range(1, 36)) - set(unique_predictions))))
+        while len(unique_predictions) < 7:
+            unique_predictions.append(np.random.choice(list(set(range(1, 50)) - set(unique_predictions))))
         unique_predictions.sort()
         
         mean_accuracy = np.mean(accuracies) * 100  # Conversia preciziei în procent
@@ -222,7 +222,7 @@ def predict_final_xgboost():
         num_freq = Counter(all_numbers)
         print("📊 Frecvența numerelor:", num_freq)
 
-        final_prediction = [int(num) for num, freq in num_freq.most_common(5)]
+        final_prediction = [int(num) for num, freq in num_freq.most_common(20)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
