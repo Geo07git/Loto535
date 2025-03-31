@@ -222,7 +222,7 @@ def predict_final_xgboost():
         num_freq = Counter(all_numbers)
         print("📊 Frecvența numerelor:", num_freq)
 
-        final_prediction = [int(num) for num, freq in num_freq.most_common(20)]
+        final_prediction = [int(num) for num, freq in num_freq.most_common(5)]
         
         print(f"📌 VARIANTA FINALA: {final_prediction}")
         return final_prediction
