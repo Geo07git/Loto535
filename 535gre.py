@@ -160,8 +160,8 @@ def predict_numbers_and_accuracy(models):
         
         # Asigurați-vă că predicțiile sunt unice
         unique_predictions = list(set(predictions))
-        while len(unique_predictions) < 7:
-            unique_predictions.append(np.random.choice(list(set(range(1, 50)) - set(unique_predictions))))
+        while len(unique_predictions) < 5:
+            unique_predictions.append(np.random.choice(list(set(range(1, 36)) - set(unique_predictions))))
         unique_predictions.sort()
         
         mean_accuracy = np.mean(accuracies) * 100  # Conversia preciziei în procent
@@ -245,7 +245,7 @@ if st.button('Calculează predicția finală'):
     <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA: {final_numbers}</h2>
     """, unsafe_allow_html=True)
 
-st.info("Sunt generate 12 numere , care sunt afisate in ordinea descescatare a sansei de aparitie !")
+st.info("Sunt generate 20 numere , care sunt afisate in ordinea descescatare a sansei de aparitie !")
          #Ele pot fi jucate in orice numar intre 5-:-12")
 
 if 'saved_predictions' in st.session_state:
