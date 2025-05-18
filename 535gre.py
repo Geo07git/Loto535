@@ -17,6 +17,8 @@ from itertools import combinations
 from collections import Counter
 #import matplotlib.pyplot as plt
 import time
+import os
+from datetime import datetime
 import warnings
 
 # Ignore all warnings
@@ -85,18 +87,41 @@ file_labels = {
 }
 
 # 🔹 Selectare fișier
+#selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()))
+#file_path = file_labels[selected_label]  # Obține numele fișierului
+
+# 🔹 Încărcare date
+#try:
+#    data = pd.read_csv(file_path)  # Citește fișierul
+#    st.write(f"📂 **Fișier selectat:** {file_path}")
+#    st.dataframe(data.tail(5))  # Afișează primele 10 rânduri
+    
+    # Aici poți face prelucrări pe `data`
+#except FileNotFoundError:
+#    st.error("❌ Fișierul nu a fost găsit. Verifică dacă există în folderul curent.")
+
+#+++++++++++++++++++++++
+# 🔹 Selectare fișier
 selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()))
 file_path = file_labels[selected_label]  # Obține numele fișierului
+
+# 🔹 Obține timpul ultimei modificări
+try:
+    last_modified_timestamp = os.path.getmtime(file_path)
+    last_modified_date = datetime.fromtimestamp(last_modified_timestamp)
+    formatted_date = last_modified_date.strftime("%d %B %Y, ora %H:%M")
+except FileNotFoundError:
+    formatted_date = "nedisponibilă"
 
 # 🔹 Încărcare date
 try:
     data = pd.read_csv(file_path)  # Citește fișierul
-    st.write(f"📂 **Fișier selectat:** {file_path}")
-    st.dataframe(data.tail(5))  # Afișează primele 10 rânduri
-    
-    # Aici poți face prelucrări pe `data`
+    st.write(f"📂 **Fișier selectat:** {file_path}  \n🕒 **Ultima modificare:** {formatted_date}")
+    st.dataframe(data.tail(5))  # Afișează ultimele 5 rânduri
 except FileNotFoundError:
     st.error("❌ Fișierul nu a fost găsit. Verifică dacă există în folderul curent.")
+
+#++++++++++++++++++++++++
 
 # Incaracare date
 #file_path = '535.csv'
