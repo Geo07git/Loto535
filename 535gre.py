@@ -12,7 +12,7 @@ from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cluster import KMeans
-#from catboost import CatBoostClassifier
+from catboost import CatBoostClassifier
 from itertools import combinations
 from collections import Counter
 #import matplotlib.pyplot as plt
@@ -143,7 +143,7 @@ st.markdown(f"""
     <h2 style='color: #FFFF00; font-size: 20px; text-shadow: 0 0 10px #FFFF00, 0 0 20px #FFFF00, 0 0 30px #FFFF00;'>📌 Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}</h2>
     """, unsafe_allow_html=True)
 
-SEED = 42
+SEED = 2024
 
 # Definim modele si parametrii
 models = {
@@ -157,7 +157,7 @@ models = {
     ),
     'SVM': SVC(random_state=SEED, probability=True),
     #'K-means':KMeans(n_clusters=8, random_state=SEED),
-    #'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
+    'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
     'MLPClassifier': MLPClassifier(random_state=SEED, max_iter=200),
     'KNN': KNeighborsClassifier(),
 }
