@@ -74,9 +74,9 @@ st.markdown("""
 
 # Configurare UI Streamlit
 st.title('LOTTO PREDICTION')
-st.title('TESTE===TESTE===TESTE')
+#st.title('TESTE===TESTE===TESTE')
 
-st.subheader("Selectează și încarcă baza de date")
+st.subheader("ALEGE LOTERIA")
 
 # 🔹 Etichete personalizate pentru fișiere
 file_labels = {
@@ -102,7 +102,7 @@ file_labels = {
 
 #+++++++++++++++++++++++
 # 🔹 Selectare fișier
-selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()))
+selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()), label_visibility="collapsed")
 file_path = file_labels[selected_label]  # Obține numele fișierului
 
 # 🔹 Obține timpul ultimei modificări
@@ -186,10 +186,10 @@ def predict_numbers_and_accuracy(models):
         # Asigurați-vă că predicțiile sunt unice
         unique_predictions = list(set(predictions))
         while len(unique_predictions) < 5:
-            unique_predictions.append(np.random.choice(list(set(range(1, 36)) - set(unique_predictions))))
+            unique_predictions.append(np.random.choice(list(set(range(1, 50)) - set(unique_predictions))))
         unique_predictions.sort()
         
-        mean_accuracy = np.mean(accuracies) * 100  # Conversia preciziei în procent
+        mean_accuracy = np.mean(accuracies) * 1000  # Conversia preciziei în procent
         
         model_predictions[model_name] = {'Numere prezise': unique_predictions, 'Acuratetea predictiei (%)': mean_accuracy}
         
@@ -307,7 +307,7 @@ if user_numbers:
     st.write("📌 Rezultate verificari")
     for i in range(3, 13):  # Afișează rezultatele pentru potrivirile între 2 și 5
         numar_potriviri = matches[i]
-        probabilitate = (numar_potriviri / total_extrageri) * 100  # Calculul probabilității în procente
+        probabilitate = (numar_potriviri / total_extrageri) * 1000  # Calculul probabilității în procente
         st.write(f"{i} numere potrivite: {numar_potriviri} ori ({probabilitate:.2f}%)")
 
 
@@ -321,4 +321,5 @@ now = datetime.now(tz).strftime("%d-%m-%Y")#  %H:%M:%S %Z")
 st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile din {now}") 
 
 #st.write(f"🛠️ Serviciul este în mentenanta : {now} ") 
+
 
