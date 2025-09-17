@@ -5,3 +5,10 @@ scikit-learn
 #matplotlib
 catboost
 altair
+#streamlit==1.38.0
+#pandas==2.2.2
+requests==2.32.3
+beautifulsoup4==4.12.3
+#scikit-learn==1.5.2
+joblib==1.4.2
+#numpy==1.26.4
