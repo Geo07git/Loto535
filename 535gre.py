@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
-from xgboost import XGBRegressor
+#from xgboost import XGBRegressor
 
 # -----------------------------------
 # Scraper from Loto49.ro history
@@ -321,3 +321,4 @@ if st.button("Train / Retrain Model"):
 #scikit-learn==1.5.2
 #joblib==1.4.2
 #numpy==1.26.4
+
