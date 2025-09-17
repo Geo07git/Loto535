@@ -321,7 +321,7 @@ tz = pytz.timezone('Europe/Bucharest')
 now = datetime.now(tz).strftime("%d-%m-%Y")#  %H:%M:%S %Z")
 #st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
 
-st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile din {now}") 
+st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile urmatoare zilei de {now}") 
 
 #st.write(f"🛠️ Serviciul este în mentenanta : {now} ") 
 
@@ -334,6 +334,7 @@ st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile din {now}")
 #scikit-learn==1.5.2
 #joblib==1.4.2
 #numpy==1.26.4
+
 
 
 
