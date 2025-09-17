@@ -1,325 +1,323 @@
 import streamlit as st
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+from collections import Counter, defaultdict
+import random
+from datetime import datetime
 import numpy as np
-import pytz
-from datetime import datetime
+import joblib
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, StackingClassifier, BaggingClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.svm import SVC
-from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.cluster import KMeans
-from catboost import CatBoostClassifier
-from itertools import combinations
-from collections import Counter
-#import matplotlib.pyplot as plt
-import time
-import os
-from datetime import datetime
-import warnings
+from sklearn.metrics import accuracy_score, f1_score
+from xgboost import XGBRegressor
 
-# Ignore all warnings
-warnings.filterwarnings('ignore')
+# -----------------------------------
+# Scraper from Loto49.ro history
+# -----------------------------------
+st.set_page_config(page_title="Lotto Romania (Hybrid AI)", layout="wide")
 
-# 🔥 Stilizare globală (adăugată imediat după importuri)
-st.markdown("""
-    <style>
-        /* Stilizare buton neon ROȘU */
-        div.stButton > button {
-            background-color: #FF3131;  /* Roșu aprins */
-            color: black;
-            font-size: 20px;  /* Mărimea fontului */
-            font-family: "Comic Sans MS", sans-serif; /* Font schimbat */
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #FF3131, 0 0 20px #FF3131, 0 0 30px #FF3131;
-        }
-        
-        div.stButton > button:hover {
-            background-color: #FF5733; /* Roșu spre portocaliu */
-            box-shadow: 0 0 20px #FF5733, 0 0 30px #FF5733, 0 0 40px #FF5733;
-        }
-
-        /* Stilizare tabel neon ALBASTRU */
-        .neon-table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        
-        .neon-table th, .neon-table td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #000000; /* Cyan Neon */
-        }
-        
-        .neon-table th {
-            background-color: #00FFFF; /* Albastru neon */
-            color: black;
-            font-size: 18px;
-            font-family: "Verdana", sans-serif; /* Schimbă fontul tabelului */
-            text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF;
-        }
-        
-        .neon-table td {
-            color: white;
-            background-color: #222222;
-            text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF;
-        }
-    </style>
-""", unsafe_allow_html=True)  # <-- AICI, LA ÎNCEPUTUL CODULUI!
-
-# Configurare UI Streamlit
-st.title('LOTTO PREDICTION')
-#st.title('TESTE===TESTE===TESTE')
-
-st.subheader("ALEGE LOTERIA")
-
-# 🔹 Etichete personalizate pentru fișiere
-file_labels = {
-    "Italia - WinForLife": "itawin.csv",
-    "Grecia - Extra 5": "535.csv",
-    "Polonia - Kaskada": "kaskada.csv",
-    "Romania 6/49": "loto649.csv"
+urls = {
+    "Loto6/49": "https://www.loto49.ro/arhiva-loto49.php",
+    "SuperLoto": "https://www.loto49.ro/arhiva-superloto.php",
+    "Joker": "https://www.loto49.ro/arhiva-joker.php"
 }
+selected_loto = st.selectbox("Select loterry:", list(urls.keys()))
 
-# 🔹 Selectare fișier
-#selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()))
-#file_path = file_labels[selected_label]  # Obține numele fișierului
-
-# 🔹 Încărcare date
-#try:
-#    data = pd.read_csv(file_path)  # Citește fișierul
-#    st.write(f"📂 **Fișier selectat:** {file_path}")
-#    st.dataframe(data.tail(5))  # Afișează primele 10 rânduri
-    
-    # Aici poți face prelucrări pe `data`
-#except FileNotFoundError:
-#    st.error("❌ Fișierul nu a fost găsit. Verifică dacă există în folderul curent.")
-
-#+++++++++++++++++++++++
-# 🔹 Selectare fișier
-selected_label = st.selectbox("📂 **Alege loteria:**", list(file_labels.keys()), label_visibility="collapsed")
-file_path = file_labels[selected_label]  # Obține numele fișierului
-
-# 🔹 Obține timpul ultimei modificări
-try:
-    last_modified_timestamp = os.path.getmtime(file_path)
-    last_modified_date = datetime.fromtimestamp(last_modified_timestamp)
-    formatted_date = last_modified_date.strftime("%d %B %Y, ora %H:%M")
-except FileNotFoundError:
-    formatted_date = "nedisponibilă"
-
-# 🔹 Încărcare date
-try:
-    data = pd.read_csv(file_path)  # Citește fișierul
-    st.write(f"📂 **Fișier selectat:** {file_path}  \n🕒 **Ultima modificare:** {formatted_date}")
-    st.dataframe(data.tail(5))  # Afișează ultimele 5 rânduri
-except FileNotFoundError:
-    st.error("❌ Fișierul nu a fost găsit. Verifică dacă există în folderul curent.")
-
-#++++++++++++++++++++++++
-
-# Incaracare date
-#file_path = '535.csv'
-data = pd.read_csv(file_path)
-X = data.iloc[:, 0].values.reshape(-1, 1)  # Numarul extragerii
-y = data.iloc[:, 1:].values  # Numerele extrase
-#y = data.iloc[:, 1:-1].values
-
-
-# Afișați cel mai recent număr de extragere și numerele câștigătoare
-most_recent_draw = data.iloc[-1, 0]
-most_recent_winning_numbers = data.iloc[-1, 1:].tolist()
-#most_recent_draw = data.iloc[-1, -1]
-#most_recent_winning_numbers = data.iloc[-1, :-1].tolist()
-
-#st.write(f"Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}")
-
-st.markdown(f"""
-    <h2 style='color: #FFFF00; font-size: 20px; text-shadow: 0 0 10px #FFFF00, 0 0 20px #FFFF00, 0 0 30px #FFFF00;'>📌 Ultima Extragere: {most_recent_draw} si Numerele Castigatoare: {most_recent_winning_numbers}</h2>
-    """, unsafe_allow_html=True)
-
-SEED = 2024
-
-# Definim modele si parametrii
-models = {
-    'AdaBoost': AdaBoostClassifier(n_estimators=100, random_state=SEED),
-    'Stacking': StackingClassifier(
-        estimators=[
-            ('rf', RandomForestClassifier(n_estimators=10, random_state=SEED)),
-            ('dt', DecisionTreeClassifier(random_state=SEED))
-        ],
-        final_estimator=LogisticRegression()
-    ),
-    'SVM': SVC(random_state=SEED, probability=True),
-    #'K-means':KMeans(n_clusters=8, random_state=SEED),
-    'CatBoost': CatBoostClassifier(verbose=0, random_state=SEED),
-    'MLPClassifier': MLPClassifier(random_state=SEED, max_iter=200),
-    'KNN': KNeighborsClassifier(),
-}
-
-# Funcție pentru antrenarea modelelor și prezicerea numerelor
-def predict_numbers_and_accuracy(models):
-    progress_bar = st.progress(0)
-    status_text = st.empty()
-    status_text.text('Asteptati , va rog...')
-    
-    model_predictions = {}
-    num_models = len(models)
-    for i, (model_name, model) in enumerate(models.items(), start=1):
-        accuracies = []
-        predictions = []
-        for SEED in range(42,43):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=SEED)
-            for j in range(y.shape[1]):
-                model.fit(X_train, y_train[:, j])
-                y_pred = model.predict(X_test)
-                accuracy = accuracy_score(y_test[:, j], y_pred)
-                accuracies.append(accuracy)
-                next_draw_prediction = model.predict(np.array([[X.max() + 1]]))
-                predictions.append(int(next_draw_prediction[0]))
-        
-        # Asigurați-vă că predicțiile sunt unice
-        unique_predictions = list(set(predictions))
-        while len(unique_predictions) < 5:
-            unique_predictions.append(np.random.choice(list(set(range(1, 50)) - set(unique_predictions))))
-        unique_predictions.sort()
-        
-        mean_accuracy = np.mean(accuracies) * 1000  # Conversia preciziei în procent
-        
-        model_predictions[model_name] = {'Numere prezise': unique_predictions, 'Acuratetea predictiei (%)': mean_accuracy}
-        
-        # Actualizați bara de progres
-        progress_bar.progress(i / num_models)
-        time.sleep(0.1)  
-    
-    status_text.text('GATA!')
-    time.sleep(0.5)  
-    status_text.empty()  
-    progress_bar.empty()  
-    
-    return model_predictions
-
-# 🔹 Buton pentru generarea seturilor de numere
-if st.button('Generează 5 seturi de predictii ML'):
-    predictions = predict_numbers_and_accuracy(models)
-    predictions_df = pd.DataFrame(predictions).T.reset_index()
-    predictions_df.columns = ['Model', 'Numere prezise', 'Acuratetea predictiei']
-    predictions_df.index = predictions_df.index + 1
-    # Salvăm seturile prezise în session_state pentru a le păstra permanent pe ecran
-    st.session_state['saved_predictions'] = predictions_df
-    st.table(predictions_df)
-
-    predictions_df.to_csv('predictions_temp.csv', index=False)
-
-import pandas as pd
-from collections import Counter
-
-# 🔹 Funcție pentru selecția finală cu XGBoost (fără ast, cu eval)
-def predict_final_xgboost():
+@st.cache_data(ttl=86400)
+def fetch_loto49_history(url):
+    #url = "https://www.loto49.ro/arhiva-loto49.php"
+    #url = "https://www.loto49.ro/arhiva-superloto.php"
+    #url = "https://www.loto49.ro/arhiva-joker.php"
     try:
-        df = pd.read_csv('predictions_temp.csv')
-        print("📂 Fișier încărcat cu succes!")
-        print("📊 Coloane disponibile:", df.columns)
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
 
-        # Verifică dacă coloana "Numere prezise" există
-        if 'Numere prezise' not in df.columns:
-            print("⚠️ Coloana 'Numere prezise' nu există în fișier.")
-            return []
+        # Find the history table
+        table = soup.find("table")
+        rows = table.find_all("tr")[1:]  # skip header row
 
-        all_numbers = []
-        for numere in df['Numere prezise']:
-            try:
-                num_list = eval(numere)  # ⚠️ Folosim eval() în loc de ast.literal_eval()
-                print(f"🔢 Numere extrase: {num_list}")
-                all_numbers.extend(num_list)
-            except Exception as e:
-                print(f"❌ Eroare la evaluarea: {numere} -> {e}")
+        results = []
+        for row in rows:
+            cols = [c.get_text(strip=True) for c in row.find_all("td")]
+            if len(cols) >= 2:
+                date_str = cols[0]
+                nums_str = cols[1]
+                draw_date = datetime.strptime(date_str, "%Y-%m-%d")
+                numbers = [int(c) for c in cols[1:7] if c.isdigit()]
+                results.append({
+            "date": draw_date.strftime("%Y-%m-%d"),
+            "numbers": numbers
+        })
+        return results
 
-        if not all_numbers:
-            print("⚠️ Nu au fost găsite numere valide.")
-            return []
-
-        num_freq = Counter(all_numbers)
-        print("📊 Frecvența numerelor:", num_freq)
-
-        final_prediction = [int(num) for num, freq in num_freq.most_common(20)]
-        
-        print(f"📌 VARIANTA FINALA: {final_prediction}")
-        return final_prediction
-
-    except FileNotFoundError:
-        print("❌ Fișierul 'predictions_temp.csv' nu a fost găsit.")
-        return []
     except Exception as e:
-        print(f"❌ Eroare neașteptată: {e}")
+        st.error(f"Failed to fetch data from manalotto.com: {e}")
         return []
 
+# -----------------------------
+# Analysis functions
+# -----------------------------
+def number_frequencies(results):
+    cnt = Counter()
+    for entry in results:
+        cnt.update(entry["numbers"])
+    return cnt
+
+def co_occurrence(results):
+    co = defaultdict(Counter)
+    for entry in results:
+        nums = entry["numbers"]
+        for a in nums:
+            for b in nums:
+                if a != b:
+                    co[a][b] += 1
+    return co
+
+def calculate_intervals(results):
+    """Calculate average gap between draws for each number."""
+    intervals = {}
+    appearances = defaultdict(list)
+
+    for i, entry in enumerate(sorted(results, key=lambda x: x["date"])):
+        for num in entry["numbers"]:
+            appearances[num].append(i)
+
+    for num, idxs in appearances.items():
+        gaps = [j - i for i, j in zip(idxs, idxs[1:])]
+        if gaps:
+            avg_gap = sum(gaps) / len(gaps)
+            last_seen_gap = (len(results) - 1) - idxs[-1]
+            intervals[num] = {"avg_gap": avg_gap, "last_gap": last_seen_gap}
+    return intervals
+
+# Define top_n pentru fiecare loto
+top_n_dict = {
+    "Loto6/49": 6,
+    "SuperLoto": 5,
+    "Joker": 5
+}
+# Folosești selecția utilizatorului
+top_n = top_n_dict[selected_loto]
+# -----------------------------
+# Heuristic Prediction
+# -----------------------------
+def predict_next_numbers(results, top_n=top_n):
+    freq = number_frequencies(results)
+    most_common = [n for n, _ in freq.most_common(10)]
+    return sorted(random.sample(most_common, top_n)) if len(most_common) >= top_n else sorted(most_common)
+
+# -----------------------------
+# AI / Agent Prediction
+# -----------------------------
+def ai_predict_next_numbers(results, co, top_n=top_n, co_threshold=1):
+    freq = number_frequencies(results)
+    intervals = calculate_intervals(results)
+
+    # 1. Pick "due soon" numbers: last_gap > avg_gap
+    due_numbers = [num for num, stats in intervals.items() if stats["last_gap"] >= stats["avg_gap"]]
+    due_numbers = sorted(due_numbers, key=lambda n: freq[n], reverse=True)[:2]  # top 2 by frequency
+
+    # 2. Add co-occurring partners
+    partner_candidates = []
+    for num in due_numbers:
+        partner_candidates.extend([n for n, count in co[num].most_common() if count >= co_threshold])
+    partner_candidates = [n for n in partner_candidates if n not in due_numbers]  # eliminăm due_numbers duplicate
+    partner_candidates = sorted(partner_candidates, key=lambda n: freq[n], reverse=True)  # ordonare după frecvență
+
+    # 3. Fill with top frequency numbers
+    freq_candidates = [n for n, _ in freq.most_common(top_n)]
+
+    # Merge into a set
+    final_set = list(due_numbers)
+
+    for n in partner_candidates:
+        if n not in final_set and len(final_set) < top_n:
+            final_set.append(n)
+    
+    for n in freq_candidates:
+        if n not in final_set and len(final_set) < top_n:
+            final_set.append(n)
+
+    return sorted(list(final_set))[:top_n]
+
+# -----------------------------
+# Machine Learning Part
+# -----------------------------
+def prepare_dataset(history):
+    loto_classes = {
+        "Loto6/49": list(range(1, 50)),
+        "SuperLoto": list(range(1, 41)),
+        "Joker": list(range(1, 46))
+    }
+    mlb = MultiLabelBinarizer(classes=loto_classes[selected_loto])
+    X = []
+    y = []
+    for i in range(len(history) - 1):
+        X.append(history[i]["numbers"])
+        y.append(history[i + 1]["numbers"])
+    X_enc = mlb.fit_transform(X)
+    y_enc = mlb.fit_transform(y)
+    return X_enc, y_enc, mlb
+
+def train_model(history):
+    X, y, mlb = prepare_dataset(history)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    model = RandomForestClassifier(n_estimators=200, random_state=42)
+    model.fit(X_train, y_train)
+
+    # Evaluate accuracy
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average="micro")
+
+    joblib.dump((model, mlb, acc, f1), "lotto_model.pkl")
+    return model, mlb, (acc, f1)
+
+def load_model():
+    try:
+        model, mlb, acc, f1 = joblib.load("lotto_model.pkl")
+        return model, mlb, (acc, f1)
+    except:
+        return None, None, (None, None)
+
+def ml_prediction(history, top_n=top_n):
+    model, mlb, _ = load_model()
+    if model is None:
+        model, mlb, _ = train_model(history)
+
+    last_draw = history[-1]["numbers"]
+    X_last = mlb.transform([last_draw])
+    probs = model.predict_proba(X_last)
+
+    # Extract probability of "1" for each number
+    avg_probs = []
+    for p in probs:
+        if p.shape[1] == 2:  # ambele clase 0 și 1
+            avg_probs.append(p[0, 1])
+        else:  # doar o singură coloană (există doar clasa 0)
+            avg_probs.append(0.0)   
+    avg_probs = np.array(avg_probs)
+    top_indices = np.argsort(avg_probs)[-top_n:]
+    prediction = mlb.classes_[top_indices]
+    return sorted(prediction.tolist())
+
+# -----------------------------
+# Streamlit Application
+# -----------------------------
+st.title("🎰 Lotto Romania Hybrid AI Predictor")
+
+# Fetch data
+with st.spinner("Fetching draw history from Loto49.ro..."):
+    data = fetch_loto49_history(urls[selected_loto])
+    df = pd.DataFrame(data)
+
+if df.empty:
+    st.error("No draw history available.")
+    st.stop()
+
+df["date"] = pd.to_datetime(df["date"])
+
+# Date range filter
+default_start = df["date"].min().date().replace(day=1)  # First day of month
+default_end = df["date"].max().date()
+start_date, end_date = st.date_input("Select date range", [default_start, default_end])
+start_date = pd.to_datetime(start_date)
+end_date = pd.to_datetime(end_date)
+df = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
+
+# Show history
+st.subheader("📅 Draw History")
+df_display = df.copy()
+df_display["numbers_str"] = df_display["numbers"].apply(lambda nums: " - ".join(f"{n:02d}" for n in nums))
+st.dataframe(df_display[["date", "numbers_str"]].sort_values("date", ascending=False))
+
+# Frequency chart
+st.subheader("📊 Number Frequencies")
+freq = number_frequencies(df.to_dict("records"))
+freq_df = pd.DataFrame(sorted(freq.items()), columns=["Number", "Frequency"]).set_index("Number")
+st.bar_chart(freq_df)
+
+st.subheader("🔗 Numbers that co-occur with each other")
+co = co_occurrence(df.to_dict("records"))
+
+selected = st.number_input("Select a number", min_value=1, max_value=49, value=22)
+
+# Buton pentru afișare tabel
+if st.button("Show Co-occurrence Table"):
+    if selected in co:
+        co_df = pd.DataFrame(co[selected].items(), columns=["Partner", "Times"]).sort_values("Times", ascending=False)
+        st.table(co_df)
+    else:
+        st.write("No data for that number in selected range.")
+
+# 1️⃣ Heuristic Predictions
+st.subheader("✨ Heuristic Predictions")
+heuristic_preds = []
+for i in range(1):
+    pred = predict_next_numbers(df.to_dict("records"), top_n=top_n)
+    heuristic_preds.append(pred)
+    st.success(f"Heuristic Prediction {i+1}: {pred}")
+
+# 2️⃣ AI/Agent Predictions
+st.subheader("🤖 AI/Agent Predictions")
+ai_preds = []
+for i in range(1):
+    pred = ai_predict_next_numbers(df.to_dict("records"), co, top_n=top_n)
+    ai_preds.append(pred)
+    st.info(f"AI Agent Prediction {i+1}: {pred}")
+
+# 3️⃣ ML Model Predictions
+st.subheader("🧠 ML Model Predictions")
+ml_preds = []
+for i in range(1):
+    pred = ml_prediction(df.to_dict("records"), top_n=top_n)
+    ml_preds.append(pred)
+    st.warning(f"ML Prediction {i+1}: {pred}")
+
+# Combine All Numbers into a Final Variant
+
+all_numbers = set()
+
+# Flatten Heuristic
+for variant in heuristic_preds:
+    if isinstance(variant, list):
+        all_numbers.update(variant)
+    else:
+        all_numbers.add(variant)
+
+# Flatten AI/Agent
+for variant in ai_preds:
+    if isinstance(variant, list):
+        all_numbers.update(variant)
+    else:
+        all_numbers.add(variant)
+
+# Flatten ML
+for variant in ml_preds:
+    if isinstance(variant, list):
+        all_numbers.update(variant)
+    else:
+        all_numbers.add(variant)
+
+# Sort and display final variant
+final_variant = sorted(all_numbers)
+st.subheader("🎯 Final Combined Prediction")
+st.success(f"Numbers: {final_variant}")
+
+if st.button("Train / Retrain Model"):
+    with st.spinner("Training AI model..."):
+        model, mlb, (acc, f1) = train_model(df.to_dict("records"))
+    st.success(f"Model retrained successfully! ✅ Accuracy: {acc:.2f}, F1: {f1:.2f}")
 
 
-# 🔹 Buton pentru predicția finală
-if st.button('Calculează predicția finală'):
-    final_numbers = predict_final_xgboost()
-    #st.write(f"📌 NUMERELE FINALE PREZISE {final_numbers}")
-    #st.write(f"Final Numbers: {final_numbers}")  # Verifică ce este în final_numbers
-    st.markdown(f"""
-    <h2 style='color: #39FF14; font-size: 25px; text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14;'>📌 VARIANTA FINALA: {final_numbers}</h2>
-    """, unsafe_allow_html=True)
-
-st.info("Sunt generate 20 numere , care sunt afisate in ordinea descescatare a sansei de aparitie !")
-         #Ele pot fi jucate in orice numar intre 5-:-12")
-
-if 'saved_predictions' in st.session_state:
-    st.subheader("📌 Seturile salvate")
-    st.table(st.session_state['saved_predictions'])
-# 🔹 Vizualizare frecvență numere
-#visualize_most_frequent(y)
-
-import streamlit as st
-
-# 🔹 Verificare Numere Extrase
-st.subheader("📌 Verifică câte numere din varianta finala au iesit in variantele analizate")
-
-# Preia automat "numerele finale prezise"
-if 'final_numbers' in locals():
-    user_numbers = final_numbers
-else:
-    user_numbers = []  # Dacă nu există numere prezise
-
-# Se folosește numărul final prezis automat
-if user_numbers:
-    # Verificarea potrivirilor pentru 2 până la 5 numere
-    matches = {i: 0 for i in range(2, 13)}  # Dicționar pentru a ține numărul de potriviri pentru fiecare valoare între 2 și 5
-    total_extrageri = len(data)  # Numărul total de extrageri
-
-    for _, row in data.iterrows():
-        extracted_numbers = row[1:].tolist()  # Extrage numerele din rând
-        match_count = len(set(user_numbers) & set(extracted_numbers))  # Calculează potrivirile
-        if match_count >= 2:  # Verifică doar potrivirile de la 3 în sus
-            if match_count <= 13:  # Asigură-te că nu depășești most_common(10)
-                matches[match_count] += 1
-
-    # Afișarea rezultatelor
-    st.write("📌 Rezultate verificari")
-    for i in range(3, 13):  # Afișează rezultatele pentru potrivirile între 2 și 5
-        numar_potriviri = matches[i]
-        probabilitate = (numar_potriviri / total_extrageri) * 1000  # Calculul probabilității în procente
-        st.write(f"{i} numere potrivite: {numar_potriviri} ori ({probabilitate:.2f}%)")
-
-
-#st.info("Vor fi doua actualizari pe zi , prima pana la ora 14.45 si a doua pana la ora 18.45.")
-
-# Afișează data și ora curente
-tz = pytz.timezone('Europe/Bucharest')
-now = datetime.now(tz).strftime("%d-%m-%Y")#  %H:%M:%S %Z")
-#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
-
-st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile din {now}") 
-
-#st.write(f"🛠️ Serviciul este în mentenanta : {now} ") 
-
-
+#streamlit==1.38.0
+#pandas==2.2.2
+#requests==2.32.3
+#beautifulsoup4==4.12.3
+#scikit-learn==1.5.2
+#joblib==1.4.2
+#numpy==1.26.4
