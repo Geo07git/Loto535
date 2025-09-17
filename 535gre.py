@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
+from datetime import datetime
 #from xgboost import XGBRegressor
 
 # -----------------------------------
@@ -313,6 +314,16 @@ if st.button("Train / Retrain Model"):
         model, mlb, (acc, f1) = train_model(df.to_dict("records"))
     st.success(f"Model retrained successfully! ✅ Accuracy: {acc:.2f}, F1: {f1:.2f}")
 
+# Afișează data și ora curente
+tz = pytz.timezone('Europe/Bucharest')
+now = datetime.now(tz).strftime("%d-%m-%Y")#  %H:%M:%S %Z")
+#st.write(f"🕒 Actualizat pentru tragerea din {now} ora 15.00")
+
+st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile din {now}") 
+
+#st.write(f"🛠️ Serviciul este în mentenanta : {now} ") 
+
+
 
 #streamlit==1.38.0
 #pandas==2.2.2
@@ -321,4 +332,5 @@ if st.button("Train / Retrain Model"):
 #scikit-learn==1.5.2
 #joblib==1.4.2
 #numpy==1.26.4
+
 
