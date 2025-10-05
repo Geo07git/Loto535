@@ -20,7 +20,6 @@ import time
 # Scraper from Loto49.ro history
 # -----------------------------------
 st.set_page_config(page_title="Lotto Romania (Hybrid AI)", layout="wide")
-st.title("🎰 Lotto Romania Hybrid AI Predictor")
 selected_loto = st.selectbox("Select loterry:", list(urls.keys()))
 
 urls = {
@@ -212,7 +211,7 @@ def ml_prediction(history, top_n=top_n):
 # -----------------------------
 # Streamlit Application
 # -----------------------------
-
+st.title("🎰 Lotto Romania Hybrid AI Predictor")
 # Fetch data
 with st.spinner("Fetching draw history from Loto49.ro..."):
     data = fetch_loto49_history(urls[selected_loto])
@@ -334,6 +333,7 @@ st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile urmatoare z
 #scikit-learn==1.5.2
 #joblib==1.4.2
 #numpy==1.26.4
+
 
 
 
