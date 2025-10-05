@@ -26,9 +26,8 @@ urls = {
     "SuperLoto": "https://www.loto49.ro/arhiva-superloto.php",
     "Joker": "https://www.loto49.ro/arhiva-joker.php"
 }
-selected_loto = st.selectbox("Select loterry:", list(urls.keys()))
 
-@st.cache_data(ttl=86400)
+#@st.cache_data(ttl=86400)
 def fetch_loto49_history(url):
     #url = "https://www.loto49.ro/arhiva-loto49.php"
     #url = "https://www.loto49.ro/arhiva-superloto.php"
@@ -212,6 +211,7 @@ def ml_prediction(history, top_n=top_n):
 # Streamlit Application
 # -----------------------------
 st.title("🎰 Lotto Romania Hybrid AI Predictor")
+selected_loto = st.selectbox("Select loterry:", list(urls.keys()))
 
 # Fetch data
 with st.spinner("Fetching draw history from Loto49.ro..."):
@@ -334,6 +334,7 @@ st.subheader(f"🕒 Baza de date a fost actualizata pentru tragerile urmatoare z
 #scikit-learn==1.5.2
 #joblib==1.4.2
 #numpy==1.26.4
+
 
 
 
